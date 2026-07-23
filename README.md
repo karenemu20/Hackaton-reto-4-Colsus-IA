@@ -34,7 +34,11 @@ Que lo que se cuenta entre limpio al sistema, desde la primera vez.
 │   ├── recursos.md               # Recursos oficiales + hallazgos clave
 │   ├── propuesta-valor-v1.md     # Propuesta de valor (borrador inicial)
 │   ├── arquitectura-v1.md        # Arquitectura técnica (borrador inicial)
-│   └── Reto4_Propuesta_de_Valor.pptx
+│   └── Propuesta_de_Valor_V1.pdf # Presentación de la propuesta
+│   └── desing/
+│     └── mockups.md              #  
+│     └── Propuesta 1             # Mockups iniciales 
+│     └── Propuesta 2             # Mockups más sencillos de todos los modulos
 ├── data/
 │   └── BODEGAS Y STOCK.xlsx      # Dataset real compartido por Colsubsidio
 ├── apps/        # (próximamente) frontend
