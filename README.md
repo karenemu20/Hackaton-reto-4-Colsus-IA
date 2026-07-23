@@ -22,7 +22,7 @@ Que lo que se cuenta entre limpio al sistema, desde la primera vez.
 | Jesus David | Frontend + IA + Negocio |
 | Juan Enriquez | Analisis de datos + LLM |
 | Yordis Bayeux | Backend + arquitectura |
-| Pablo  Bayeux | Visual computer |
+| Pablo   | Visual computer |
 
 ## Estructura del repo
 
