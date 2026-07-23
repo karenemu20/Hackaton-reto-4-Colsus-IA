@@ -18,10 +18,11 @@ Que lo que se cuenta entre limpio al sistema, desde la primera vez.
 
 | Integrante | Rol |
 |---|---|
-| Karen Mantilla Urquijo | QA + Mecatrónica |
-| [Nombre integrante 2] | [Rol] |
-| [Nombre integrante 3] | [Rol] |
-| [Nombre integrante 4] | [Rol] |
+| Karen Mantilla Urquijo | UX/UI + QA + Scrum|
+| Jesus David | Frontend + IA + Negocio |
+| Juan Enriquez | Analisis de datos + LLM |
+| Yordis Bayeux | Backend + arquitectura |
+| Pablo  Bayeux | Visual computer |
 
 ## Estructura del repo
 
