@@ -36,7 +36,7 @@ Que lo que se cuenta entre limpio al sistema, desde la primera vez.
 │   ├── arquitectura-v1.md        # Arquitectura técnica (borrador inicial)
 │   └── Propuesta_de_Valor_V1.pdf # Presentación de la propuesta
 │   └── desing/
-│     └── mockups.md              #  
+│     └── mockups.md              # Guía: qué construir vs qué es visión a futuro 
 │     └── Propuesta 1             # Mockups iniciales 
 │     └── Propuesta 2             # Mockups más sencillos de todos los modulos
 ├── data/
