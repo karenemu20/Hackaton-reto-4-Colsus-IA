@@ -1,6 +1,6 @@
 # Propuesta de valor — v1 (borrador inicial)
 
-> Versión inicial, previa a la fase de refinamiento con el equipo. El archivo de slides está en [`Reto4_Propuesta_de_Valor.pptx`](./Reto4_Propuesta_de_Valor.pptx).
+> Versión inicial, previa a la fase de refinamiento con el equipo. El archivo de slides está en [`Propuesta_de_Valor_V1.pptx`](./Reto4_Propuesta_de_Valor.pptx).
 
 **Tagline:** Que lo que se cuenta entre limpio al sistema, desde la primera vez.
 
