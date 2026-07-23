@@ -1,6 +1,6 @@
 # Mockups de diseño — guía de qué construir vs. qué es visión a futuro
 
-> Los mockups (`dashboard-colsus-ia.png`, `flujo-5-pasos.png`) son referencia visual y de marca. No todo lo que aparece ahí es alcance del hackathon — ver la tabla.
+> Los mockups (`dashboard.jpeg`, `Mockupsv1.jpeg`) son referencia visual y de marca. No todo lo que aparece ahí es alcance del hackathon — ver la tabla.
 
 | Elemento del mockup | Veredicto | Nota |
 |---|---|---|
