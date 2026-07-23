@@ -1,6 +1,6 @@
 # Mockups de diseño — guía de qué construir vs. qué es visión a futuro
 
-> Los mockups (`dashboard.jpeg`, `Mockupsv1.jpeg`) son referencia visual y de marca. No todo lo que aparece ahí es alcance del hackathon — ver la tabla.
+> Los mockups de la propuesta 1 (`dashboard.jpeg`, `Mockupsv1.jpeg`) son referencia visual y de marca. No todo lo que aparece ahí es alcance del hackathon — ver la tabla.
 
 | Elemento del mockup | Veredicto | Nota |
 |---|---|---|
@@ -16,3 +16,5 @@
 | "Insights Colsus IA Brain" (recomendaciones tipo patrones de merma) | ⚠️ Simplificar | Precalcular 1-2 insights reales contra el Excel una sola vez y mostrarlos fijos, no un motor en vivo |
 
 **Regla general:** todo lo que es lectura/cálculo directo de datos ya guardados (KPIs, alertas, gráficos simples) es barato de construir. Todo lo que implica una visualización custom elaborada (mapa de bodega) o un motor de inteligencia adicional (insights) es caro — se muestra en el pitch como visión de producto, no se construye para la demo.
+
+Por lo que los mokcups de la propuesta 2 se alinean más con el tiempo de ejecución
