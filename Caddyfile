@@ -1,0 +1,17 @@
+# Un solo frente: sirve la PWA y proxya la API. HTTPS automatico si DOMAIN es un dominio real.
+# En localhost, Caddy usa su CA interna (el micro funciona en localhost por ser contexto seguro).
+{$DOMAIN:localhost} {
+	# API
+	handle /v1/* {
+		reverse_proxy api:8000
+	}
+	handle /health {
+		reverse_proxy api:8000
+	}
+	# PWA del operario (estatico)
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

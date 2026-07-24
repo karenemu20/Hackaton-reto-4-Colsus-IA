@@ -1,0 +1,50 @@
+# Colsus Inventory — demo de captura por voz. Levanta todo sin instalar nada local.
+#   cp .env.example .env   (pon tu ELEVENLABS_API_KEY y tu DOMAIN)
+#   docker compose up -d --build
+# Caddy da HTTPS automatico: el microfono del navegador NO funciona sin https (salvo localhost).
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file: .env
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./apps/mobile:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+  # Opcional (referencia + embeddings). No hace falta para el demo de voz: el matcher
+  # lee context/data/*.csv. Arrancalo con:  docker compose --profile datos up -d
+  db:
+    image: pgvector/pgvector:pg16
+    profiles: ["datos"]
+    environment:
+      POSTGRES_USER: colsus
+      POSTGRES_PASSWORD: colsus
+      POSTGRES_DB: inventario
+    volumes:
+      - ./plataforma/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pg_data:

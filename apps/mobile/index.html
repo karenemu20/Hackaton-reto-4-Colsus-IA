@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0f766e">
+<title>Colsus Inventario — Voz</title>
+<style>
+  :root { --verde:#0f766e; --ambar:#b45309; --bg:#0b1220; --card:#111c2e; --tx:#e8eef7; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; font-family:system-ui,-apple-system,sans-serif; background:var(--bg);
+         color:var(--tx); min-height:100dvh; display:flex; flex-direction:column; }
+  header { padding:16px; font-weight:700; font-size:18px; }
+  header small { display:block; font-weight:400; opacity:.6; font-size:13px; }
+  main { flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; }
+  .card { background:var(--card); border-radius:16px; padding:16px; }
+  .heard { min-height:28px; font-size:20px; }
+  .heard b { color:#7dd3c9; }
+  #mic { border:0; border-radius:24px; padding:28px; font-size:22px; font-weight:800;
+         color:#fff; background:var(--verde); width:100%; min-height:96px; }
+  #mic.rec { background:#b91c1c; animation:pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity:.7; } }
+  .q { font-size:22px; font-weight:700; margin-bottom:8px; }
+  .cand { display:block; width:100%; text-align:left; border:2px solid #24344e;
+          background:#0d1728; color:var(--tx); border-radius:14px; padding:18px;
+          font-size:19px; margin-top:10px; }
+  .cand b { display:block; font-size:21px; }
+  .cand span { opacity:.65; font-size:14px; }
+  .status { opacity:.6; font-size:14px; }
+  select { width:100%; padding:14px; border-radius:12px; font-size:16px;
+           background:#0d1728; color:var(--tx); border:1px solid #24344e; }
+</style>
+</head>
+<body>
+<header>Toma de inventario <small>Bodega actual · conteo por voz</small></header>
+<main>
+  <div class="card">
+    <select id="bodega">
+      <option value="almacen_ayb">almacen_ayb (270 refs)</option>
+      <option value="rest_fuentes_ayb">rest_fuentes_ayb</option>
+      <option value="kiosco_taquilla_ayb">kiosco_taquilla_ayb</option>
+      <option value="zoologico">zoologico</option>
+    </select>
+  </div>
+
+  <button id="mic">🎤 Mantén y habla el producto</button>
+
+  <div class="card">
+    <div class="status" id="status">Listo. Toca el botón y di, por ejemplo, "agua".</div>
+    <div class="heard" id="heard"></div>
+  </div>
+
+  <div class="card" id="respuesta" style="display:none">
+    <div class="q" id="pregunta"></div>
+    <div id="candidatos"></div>
+  </div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const api = ""; // mismo origen: Caddy proxya /v1/* a la API
+let rec, chunks = [], grabando = false;
+
+function setStatus(t){ $("#status").textContent = t; }
+
+async function hablar(texto){
+  try {
+    const r = await fetch(api + "/v1/voz/hablar", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ texto })
+    });
+    if(!r.ok) return;                 // sin key/credito: seguimos en silencio, no rompe
+    const blob = await r.blob();
+    new Audio(URL.createObjectURL(blob)).play();  // speaker del telefono
+  } catch(e){ /* la voz es secundaria: nunca bloquea (ADR-0003) */ }
+}
+
+async function resolver(texto){
+  const bodega_id = $("#bodega").value;
+  const r = await fetch(api + "/v1/resolver", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ bodega_id, texto, fuente:"manual" })
+  });
+  const data = await r.json();
+  pintar(data);
+}
+
+function pintar(data){
+  const box = $("#respuesta"), cont = $("#candidatos");
+  cont.innerHTML = "";
+  if(!data.candidatos || !data.candidatos.length){
+    box.style.display="block"; $("#pregunta").textContent = "No encontré ese producto. Repite.";
+    hablar("No encontré ese producto. Repite."); return;
+  }
+  const pregunta = data.requiere_desambiguacion ? data.pregunta : "Confirma el producto:";
+  $("#pregunta").textContent = pregunta;
+  box.style.display = "block";
+  hablar(pregunta);                    // el sistema PREGUNTA en voz alta
+  for(const c of data.candidatos){
+    const b = document.createElement("button");
+    b.className = "cand";
+    b.innerHTML = `<b>${c.nombre}</b><span>${c.unidad_esperada}${c.sku?(" · "+c.sku):""}</span>`;
+    b.onclick = () => {
+      setStatus("Elegido: " + c.nombre + " — ahora ingresa la cantidad con +/-");
+      hablar(c.nombre + ". ¿Cuántos?");
+      box.style.display="none"; $("#heard").innerHTML="";
+    };
+    cont.appendChild(b);
+  }
+}
+
+async function onAudio(blob){
+  setStatus("Transcribiendo…");
+  const fd = new FormData(); fd.append("file", blob, "audio.webm");
+  try {
+    const r = await fetch(api + "/v1/voz/transcribir", { method:"POST", body: fd });
+    const data = await r.json();
+    if(!r.ok){ setStatus("Error STT: " + (data.detail||r.status)); return; }
+    $("#heard").innerHTML = "Escuché: <b>" + (data.texto||"(nada)") + "</b>";
+    setStatus("Buscando en el catálogo de la bodega…");
+    if(data.texto) await resolver(data.texto);
+    else setStatus("No entendí. Toca y repite.");
+  } catch(e){ setStatus("Sin conexión con la API."); }
+}
+
+async function iniciar(){
+  const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  rec = new MediaRecorder(stream);
+  rec.ondataavailable = e => chunks.push(e.data);
+  rec.onstop = () => { onAudio(new Blob(chunks, {type:"audio/webm"})); chunks=[]; };
+}
+
+const mic = $("#mic");
+async function press(){ if(grabando) return; if(!rec) await iniciar();
+  chunks=[]; rec.start(); grabando=true; mic.classList.add("rec");
+  mic.textContent="● Grabando… suelta para buscar"; setStatus("Escuchando…"); }
+function release(){ if(!grabando) return; rec.stop(); grabando=false;
+  mic.classList.remove("rec"); mic.textContent="🎤 Mantén y habla el producto"; }
+
+mic.addEventListener("mousedown", press);
+mic.addEventListener("mouseup", release);
+mic.addEventListener("touchstart", e => { e.preventDefault(); press(); }, {passive:false});
+mic.addEventListener("touchend", e => { e.preventDefault(); release(); }, {passive:false});
+</script>
+</body>
+</html>
